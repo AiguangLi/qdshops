@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<title>仟店找铺工具</title>
+		<link rel="stylesheet" href="main.css" />
+	</head>
+	<body>
+		<input type="text" id="locationInput" placeholder="请输入地名，推荐使用小区或大厦名" />
+		<div
+			id="locationDropdown"
+			style="
+				display: none;
+				position: absolute;
+				background-color: #fff;
+				border: 1px solid #ccc;
+			"
+		></div>
+		<!-- <button onclick="addLocation()">添加地点</button> -->
+		<div id="mapContainer"></div>
+		<div id="locationList"></div>
+		<div id="footer">
+			<button id="removeAll" onclick="removeAllLocations()">移除所有地点</button>
+			<input type="number" id="radiusInput" placeholder="标记半径（米）" value="1000" />
+			<button id="updateMarker" onclick="updateMarkers()">更新标记</button>
+		</div>
+
+		<script src="https://api.map.baidu.com/api?v=2.0&ak=lyAx3WohIL11QqzH8kM8q4Mu9MOFk61h"></script>
+		<script>
+			// 初始化地图
+			var map = new BMap.Map('mapContainer');
+			var initialRadius = 1000;
+			var userPoint = null; // 用户当前位置
+			var locations = []; // 存储添加的地点和标记
+
+			// 标记用户当前的位置并将地图中心设置为用户位置
+			function markUserLocation() {
+				// 使用浏览器的定位API获取用户当前位置
+				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition(
+						function (position) {
+							userPoint = new BMap.Point(
+								position.coords.longitude,
+								position.coords.latitude
+							);
+
+							showUserMarker();
+						},
+						function (error) {
+							alert('无法获取您的位置。');
+						}
+					);
+				} else {
+					alert('您的浏览器不支持地理定位功能。');
+				}
+			}
+
+			function showUserMarker() {
+				if (userPoint != null) {
+					var userMarker = new BMap.Marker(userPoint);
+					map.addOverlay(userMarker);
+
+					// 在用户位置添加信息窗口
+					var infoWindow = new BMap.InfoWindow('当前位置');
+					userMarker.addEventListener('click', function () {
+						this.openInfoWindow(infoWindow);
+					});
+
+					// 将地图中心设置为用户位置
+					map.panTo(userPoint);
+				}
+			}
+
+			// 初始化地图，标记用户当前位置，并设置地图中心
+			function initialize() {
+				// 初始化地图
+				map.centerAndZoom(new BMap.Point(116.404, 39.915), 12);
+				map.enableScrollWheelZoom(true);
+
+				// 添加定位控件
+				const geolocationControl = new BMap.GeolocationControl();
+				geolocationControl.addEventListener('locationSuccess', onLocationSuccess);
+				geolocationControl.addEventListener('locationError', onLocationError);
+				map.addControl(geolocationControl);
+
+				// 标记用户当前位置
+				markUserLocation();
+			}
+
+			function onLocationSuccess(event) {
+				userPoint = event.point; // 获取定位成功后的坐标
+				map.setCenter(userPoint); // 设置地图中心为用户当前位置
+				showUserMarker();
+			}
+
+			// 定位失败时的处理
+			function onLocationError(event) {
+				alert('定位失败，请检查浏览器定位权限或网络连接。');
+			}
+
+			// 获取用户当前位置的函数，通过点击按钮调用
+			function getUserLocation() {
+				map.locate({ enableHighAccuracy: true });
+			}
+
+			// 初始化Autocomplete
+			var locationInput = document.getElementById('locationInput');
+			var autoComplete = new BMap.Autocomplete({
+				input: locationInput,
+				location: map,
+			});
+
+			autoComplete.addEventListener('onconfirm', function (event) {
+				var { item } = event;
+				var poi = item.value;
+
+				var locationName =
+					poi.province + poi.city + poi.district + poi.street + poi.business;
+
+				locationInput.value = '';
+				setPlace(locationName);
+			});
+
+			function setPlace(locationName) {
+				// map.clearOverlays(); //清除地图上所有覆盖物
+				function myFun() {
+					if (typeof local.getResults().getPoi(0) === 'undefined') {
+						// 对象为undefined，弹出警告窗提示
+						alert('获取地点坐标失败，请检查百度接口配额！');
+						return;
+					}
+					var point = local.getResults().getPoi(0).point; //获取第一个智能搜索的结果
+					map.centerAndZoom(point, 18);
+					var customIcon = new BMap.Icon(
+						'images/shop.png', // 自定义图标图片路径
+						new BMap.Size(30, 30), // 图标尺寸，根据需要调整
+						{
+							anchor: new BMap.Size(15, 15), // 图标的定位锚点，即图标的中心点位置
+							imageSize: new BMap.Size(30, 30), // 图标所用的图片大小，必须与实际图片大小一致
+						}
+					);
+					map.addOverlay(new BMap.Marker(point, { icon: customIcon })); //添加标注
+
+					locations.push({ name: locationName, point: point });
+					displayLocationList();
+				}
+				var local = new BMap.LocalSearch(map, {
+					//智能搜索
+					onSearchComplete: myFun,
+				});
+				local.search(locationName);
+			}
+
+			// 在地图上标记点并标记半径
+			function updateMarkers() {
+				var radiusInput = document.getElementById('radiusInput');
+				var radius = parseFloat(radiusInput.value);
+				if (isNaN(radius) || radius <= 0) {
+					alert('请输入有效的标记半径（大于0的数值）');
+					return;
+				}
+
+				// 清除之前的标记
+				map.clearOverlays();
+
+				var customIcon = new BMap.Icon(
+					'images/shop.png', // 自定义图标图片路径
+					new BMap.Size(30, 30), // 图标尺寸，根据需要调整
+					{
+						anchor: new BMap.Size(15, 15), // 图标的定位锚点，即图标的中心点位置
+						imageSize: new BMap.Size(30, 30), // 图标所用的图片大小，必须与实际图片大小一致
+					}
+				);
+
+				// 标记地点
+				for (var i = 0; i < locations.length; i++) {
+					var location = locations[i];
+					if (!location.point) continue; // 如果地点的经纬度不存在，跳过该地点
+
+					var marker = new BMap.Marker(location.point, { icon: customIcon });
+					map.addOverlay(marker);
+
+					// 在地点上添加信息窗口
+					var infoWindow = new BMap.InfoWindow(location.name);
+					marker.addEventListener('click', function () {
+						this.openInfoWindow(infoWindow);
+					});
+
+					// 绘制标记半径
+					var circle = new BMap.Circle(location.point, radius, {
+						strokeColor: '#0990EC',
+						strokeWeight: 2,
+						strokeOpacity: 0.5,
+						fillColor: 'rgba(9, 144, 236, 0.3)',
+					});
+					map.addOverlay(circle);
+				}
+
+				// 将地点和标记半径调整为可见范围
+				var points = locations.filter(loc => loc.point).map(loc => loc.point);
+				// 设置缩放级别
+				map.setViewport(points, { zoomFactor: 13 });
+
+				// 设置边界范围限制缩放
+				var bounds = new BMap.Bounds(points[0], points[points.length - 1]);
+				map.setViewport(bounds);
+			}
+
+			// 在地点列表中显示地点
+			function displayLocationList() {
+				var locationListDiv = document.getElementById('locationList');
+				locationListDiv.innerHTML = '';
+				locations.forEach(function (location, index) {
+					// var locationDiv = document.createElement('div');
+					// locationDiv.textContent = location.name;
+
+					// // 添加移除按钮
+					// var removeButton = document.createElement('button');
+					// removeButton.textContent = '移除';
+					// removeButton.onclick = function () {
+					// 	locations.splice(index, 1);
+					// 	displayLocationList();
+					// 	updateMarkers();
+					// };
+					// locationDiv.appendChild(removeButton);
+
+					// locationDiv.onclick = function () {
+					// 	map.panTo(location.point);
+					// };
+					// locationListDiv.appendChild(locationDiv);
+					addLocationItem(location.name, index);
+				});
+			}
+
+			// 模拟一个函数，用于添加新的地点列表项
+			function addLocationItem(locationName, index) {
+				var locationListDiv = document.getElementById('locationList');
+				// 创建新的地点列表项
+				const locationItem = document.createElement('div');
+				locationItem.classList.add('location-item');
+
+				// 设置地点列表项的内容和样式
+				locationItem.innerHTML = `${locationName} <span class="remove-icon" onclick="removeLocation(${index})"><img class="delete-icon" src="images/delete-icon.png"/></span>`;
+				locationItem.onclick = function () {
+					map.panTo(location.point);
+				};
+
+				// 将新的地点列表项添加到地点列表容器中
+				locationListDiv.appendChild(locationItem);
+			}
+
+			function removeLocation(index) {
+				locations.splice(index, 1);
+				displayLocationList();
+				updateMarkers();
+				showUserMarker();
+			}
+
+			// 移除地点列表的所有地点
+			function removeAllLocations() {
+				locations = [];
+				map.clearOverlays();
+				displayLocationList();
+				showUserMarker();
+			}
+
+			// 初始化地图
+			initialize();
+
+			// 点击空白区域隐藏下拉选择
+			document.addEventListener('click', function (event) {
+				var dropdown = document.getElementById('locationDropdown');
+				if (
+					!event.target.closest('#locationInput') &&
+					!event.target.closest('#locationDropdown')
+				) {
+					dropdown.style.display = 'none';
+				}
+			});
+
+			// 阻止地点输入框的点击事件冒泡，避免隐藏下拉选择
+			document.getElementById('locationInput').addEventListener('click', function (event) {
+				event.stopPropagation();
+			});
+		</script>
+	</body>
+</html>

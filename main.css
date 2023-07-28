@@ -1,0 +1,183 @@
+#mapContainer {
+	position: relative;
+	width: 100%;
+	height: 80vh; /* 使用80%的屏幕高度作为地图容器的高度 */
+}
+
+/* 全部文本类型输入框的样式 */
+input {
+	background-color: #fff;
+	border: 1px solid #eee;
+	padding: 8px;
+	border-radius: 4px;
+}
+
+/* 全部 按钮的样式 */
+button {
+	background-color: #0097f2;
+	color: #fff;
+	border: none;
+	align-content: center;
+	border-radius: 4px;
+	cursor: pointer;
+}
+
+button:hover {
+	background-color: #69bbee;
+}
+
+button:focus {
+	background-color: #69bbee;
+}
+
+button:active {
+	background-color: #0087ff;
+}
+
+/* 鼠标移入时的样式 */
+input:hover {
+	border-color: #0097f2; /* 设置边框颜色为蓝色 */
+}
+
+/* 输入状态的样式 */
+input:focus {
+	border: none; /* 取消原有的边框 */
+	box-shadow: 0 0 1px 1px #69bbee; /* 设置细线边框，颜色为绿色 */
+	outline: 1px solid #0097f2; /* 设置边框颜色为绿色 */
+}
+
+#locationInput {
+	position: absolute;
+	top: 10px; /* 调整输入框距离地图顶部的距离 */
+	left: 30px; /* 调整输入框距离地图左侧的距离 */
+	z-index: 999; /* 确保输入框位于地图上方 */
+	height: 20px;
+
+	/* 在移动端设置输入框宽度 */
+	width: calc(100% - 60px);
+}
+#locationList {
+	max-height: 20vh;
+	overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+	#locationInput {
+		/* 在移动端设置输入框宽度 */
+		width: calc(100% - 60px);
+		text-align: center;
+		left: 30px;
+		height: 40px;
+	}
+
+	button {
+		height: 40px;
+	}
+}
+
+@media (min-width: 1024px) {
+	#locationInput {
+		/* 在移动端设置输入框宽度 */
+		width: 320px;
+		left: 10px;
+		height: 20px;
+	}
+
+	button {
+		height: 30px;
+	}
+}
+
+#removeAll {
+	background-color: #fc6732;
+}
+
+#removeAll:hover {
+	background-color: #fc8791;
+}
+
+#removeAll:active {
+	background-color: #fc4422;
+}
+
+/* 地点列表容器样式 */
+#locationList {
+	display: flex;
+	flex-wrap: wrap;
+	margin-top: 10px;
+}
+
+#footer {
+	position: fixed; /* 固定在页面底部 */
+	bottom: 0px; /* 距离底部的间距为60像素 */
+	left: 50%; /* 水平居中 */
+	transform: translateX(-50%); /* 水平居中 */
+	background-color: #f5f5f5;
+	border: 1px solid #eee;
+	width: 100%;
+	display: flex;
+	justify-content: space-between; /* 让三个元素等宽分布 */
+	align-items: center; /* 垂直方向居中 */
+	padding: 0 16px; /* 距离左右边距16px */
+	height: 60px;
+}
+
+/* 移除所有地点按钮样式 */
+#removeAll,
+#updateMarker,
+#radiusInput {
+	flex: 1; /* 让三个元素等宽 */
+	margin-right: 16px; /* 三个元素之间的间距为16px */
+}
+
+#removeAll {
+	margin-left: 16px;
+}
+
+/* distanceInput样式 */
+#radiusInput {
+	margin-right: 0; /* distanceInput没有右侧间距 */
+}
+
+/* 地点列表项样式 */
+.location-item {
+	display: inline-flex; /* 使用 Flexbox 布局 */
+	align-items: center; /* 垂直方向居中对齐 */
+	margin: 5px;
+	padding: 5px 10px;
+	border: 1px solid #eee; /* 添加边框 */
+	border-radius: 4px;
+	background-color: #f2f2f2;
+}
+
+/* 移动端按钮高度为32像素 */
+@media (max-width: 767px) {
+	.location-item {
+		height: 32px;
+	}
+}
+
+/* PC端按钮高度为20像素 */
+@media (min-width: 768px) {
+	.location-item {
+		height: 20px;
+	}
+}
+
+.remove-icon {
+	padding-left: 8px;
+	cursor: pointer;
+}
+
+/* 移除图标样式 */
+.delete-icon {
+	width: 12px; /* 设置图标的宽度 */
+	height: 12px; /* 设置图标的高度 */
+	/* 可以通过filter属性来配置图标的颜色 */
+}
+
+/* 按钮底色为蓝色 */
+.location-item:hover {
+	background-color: #ccc;
+	color: white;
+}
