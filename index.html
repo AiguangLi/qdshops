@@ -93,6 +93,14 @@
 
 				// 标记用户当前位置
 				markUserLocation();
+
+				// 从LocalStorage中读取保存的数据
+				var storedData = localStorage.getItem('locationList');
+				if (storedData) {
+					locations = JSON.parse(storedData);
+					displayLocationList();
+					updateMarkers();
+				}
 			}
 
 			function onLocationSuccess(event) {
@@ -125,12 +133,14 @@
 				var locationName =
 					poi.province + poi.city + poi.district + poi.street + poi.business;
 
+				var shortName = poi.district + poi.street + poi.business;
+
 				locationInput.value = '';
-				setPlace(locationName);
+				setPlace(locationName, shortName);
 			});
 
-			function setPlace(locationName) {
-				// map.clearOverlays(); //清除地图上所有覆盖物
+			// shortName 用于显示，避免过长
+			function setPlace(locationName, shortName) {
 				function myFun() {
 					if (typeof local.getResults().getPoi(0) === 'undefined') {
 						// 对象为undefined，弹出警告窗提示
@@ -149,7 +159,9 @@
 					);
 					map.addOverlay(new BMap.Marker(point, { icon: customIcon })); //添加标注
 
-					locations.push({ name: locationName, point: point });
+					locations.push({ name: shortName, point: point });
+					// 更新LocalStorage中的数据
+					localStorage.setItem('locationList', JSON.stringify(locations));
 					displayLocationList();
 				}
 				var local = new BMap.LocalSearch(map, {
@@ -204,6 +216,8 @@
 					map.addOverlay(circle);
 				}
 
+				showUserMarker();
+
 				// 将地点和标记半径调整为可见范围
 				var points = locations.filter(loc => loc.point).map(loc => loc.point);
 				// 设置缩放级别
@@ -219,23 +233,6 @@
 				var locationListDiv = document.getElementById('locationList');
 				locationListDiv.innerHTML = '';
 				locations.forEach(function (location, index) {
-					// var locationDiv = document.createElement('div');
-					// locationDiv.textContent = location.name;
-
-					// // 添加移除按钮
-					// var removeButton = document.createElement('button');
-					// removeButton.textContent = '移除';
-					// removeButton.onclick = function () {
-					// 	locations.splice(index, 1);
-					// 	displayLocationList();
-					// 	updateMarkers();
-					// };
-					// locationDiv.appendChild(removeButton);
-
-					// locationDiv.onclick = function () {
-					// 	map.panTo(location.point);
-					// };
-					// locationListDiv.appendChild(locationDiv);
 					addLocationItem(location.name, index);
 				});
 			}
@@ -259,6 +256,7 @@
 
 			function removeLocation(index) {
 				locations.splice(index, 1);
+				localStorage.setItem('locationList', JSON.stringify(locations));
 				displayLocationList();
 				updateMarkers();
 				showUserMarker();
@@ -269,6 +267,8 @@
 				locations = [];
 				map.clearOverlays();
 				displayLocationList();
+				// 清空LocalStorage中的数据
+				localStorage.removeItem('locationList');
 				showUserMarker();
 			}
 
