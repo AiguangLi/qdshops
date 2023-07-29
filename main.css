@@ -66,12 +66,19 @@ input:focus {
 		/* 在移动端设置输入框宽度 */
 		width: calc(100% - 60px);
 		text-align: center;
-		left: 30px;
-		height: 40px;
+		left: 20px;
+		height: 2rem;
+		font-size: 1rem;
+	}
+
+	#radiusInput {
+		height: 1.6rem;
+		font-size: 1rem;
 	}
 
 	button {
-		height: 40px;
+		height: 2.6rem;
+		font-size: 1rem;
 	}
 }
 
@@ -81,10 +88,16 @@ input:focus {
 		width: 320px;
 		left: 10px;
 		height: 20px;
+		font-size: 1rem;
+	}
+
+	#radiusInput {
+		font-size: 1.2rem;
 	}
 
 	button {
-		height: 30px;
+		height: 40px;
+		font-size: 1.2rem;
 	}
 }
 
@@ -118,8 +131,8 @@ input:focus {
 	display: flex;
 	justify-content: space-between; /* 让三个元素等宽分布 */
 	align-items: center; /* 垂直方向居中 */
-	padding: 0 16px; /* 距离左右边距16px */
-	height: 60px;
+	padding: 0 8px; /* 距离左右边距16px */
+	height: 4rem;
 }
 
 /* 移除所有地点按钮样式 */
@@ -127,16 +140,16 @@ input:focus {
 #updateMarker,
 #radiusInput {
 	flex: 1; /* 让三个元素等宽 */
-	margin-right: 16px; /* 三个元素之间的间距为16px */
+	margin-right: 8px; /* 三个元素之间的间距为16px */
 }
 
 #removeAll {
-	margin-left: 16px;
+	margin-left: 8px;
 }
 
 /* distanceInput样式 */
 #radiusInput {
-	margin-right: 0; /* distanceInput没有右侧间距 */
+	margin-right: 8px; /* distanceInput没有右侧间距 */
 }
 
 /* 地点列表项样式 */
