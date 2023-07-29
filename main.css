@@ -56,10 +56,6 @@ input:focus {
 	/* 在移动端设置输入框宽度 */
 	width: calc(100% - 60px);
 }
-#locationList {
-	max-height: 20vh;
-	overflow-y: auto;
-}
 
 @media (max-width: 1024px) {
 	#locationInput {
@@ -80,6 +76,10 @@ input:focus {
 		height: 2.6rem;
 		font-size: 1rem;
 	}
+
+	#mapContainer {
+		height: 70vh; /* 使用70%的屏幕高度作为地图容器的高度 */
+	}
 }
 
 @media (min-width: 1024px) {
@@ -92,7 +92,7 @@ input:focus {
 	}
 
 	#radiusInput {
-		font-size: 1.2rem;
+		font-size: 1rem;
 	}
 
 	button {
@@ -117,7 +117,9 @@ input:focus {
 #locationList {
 	display: flex;
 	flex-wrap: wrap;
-	margin-top: 10px;
+	margin-top: 8px;
+	max-height: 20vh;
+	overflow-y: auto;
 }
 
 #footer {
@@ -132,7 +134,7 @@ input:focus {
 	justify-content: space-between; /* 让三个元素等宽分布 */
 	align-items: center; /* 垂直方向居中 */
 	padding: 0 8px; /* 距离左右边距16px */
-	height: 4rem;
+	height: 3rem;
 }
 
 /* 移除所有地点按钮样式 */
@@ -145,11 +147,17 @@ input:focus {
 
 #removeAll {
 	margin-left: 8px;
+	min-width: 25%;
+}
+
+#updateMarker {
+	min-width: 25%;
 }
 
 /* distanceInput样式 */
 #radiusInput {
 	margin-right: 8px; /* distanceInput没有右侧间距 */
+	max-width: 33%;
 }
 
 /* 地点列表项样式 */

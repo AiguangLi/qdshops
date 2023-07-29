@@ -66,11 +66,11 @@
 						map.removeOverlay(userLocationMarker);
 					}
 					userLocationMarker = new BMap.Marker(userPoint);
-					map.addOverlay(userMarker);
+					map.addOverlay(userLocationMarker);
 
 					// 在用户位置添加信息窗口
 					var infoWindow = new BMap.InfoWindow('当前位置');
-					userMarker.addEventListener('click', function () {
+					userLocationMarker.addEventListener('click', function () {
 						this.openInfoWindow(infoWindow);
 					});
 
