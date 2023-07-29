@@ -3,6 +3,10 @@
 	<head>
 		<meta charset="UTF-8" />
 		<title>仟店找铺工具</title>
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
 		<link rel="stylesheet" href="main.css" />
 	</head>
 	<body>
@@ -20,7 +24,7 @@
 		<div id="mapContainer"></div>
 		<div id="locationList"></div>
 		<div id="footer">
-			<button id="removeAll" onclick="removeAllLocations()">移除所有地点</button>
+			<button id="removeAll" onclick="removeAllLocations()">移除所有</button>
 			<input type="number" id="radiusInput" placeholder="标记半径（米）" value="1000" />
 			<button id="updateMarker" onclick="updateMarkers()">更新标记</button>
 		</div>
@@ -32,6 +36,7 @@
 			var initialRadius = 1000;
 			var userPoint = null; // 用户当前位置
 			var locations = []; // 存储添加的地点和标记
+			var userLocationMarker = null;
 
 			// 标记用户当前的位置并将地图中心设置为用户位置
 			function markUserLocation() {
@@ -57,7 +62,10 @@
 
 			function showUserMarker() {
 				if (userPoint != null) {
-					var userMarker = new BMap.Marker(userPoint);
+					if (userLocationMarker) {
+						map.removeOverlay(userLocationMarker);
+					}
+					userLocationMarker = new BMap.Marker(userPoint);
 					map.addOverlay(userMarker);
 
 					// 在用户位置添加信息窗口
