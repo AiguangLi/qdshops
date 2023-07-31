@@ -214,6 +214,23 @@
 						fillColor: 'rgba(9, 144, 236, 0.3)',
 					});
 					map.addOverlay(circle);
+
+					if (userPoint) {
+						// 绘制直线
+						var polyline = new BMap.Polyline([userPoint, location.point], {
+							strokeColor: '#0990EC',
+							strokeWeight: 2,
+							strokeOpacity: 0.9,
+						});
+						map.addOverlay(polyline);
+
+						// 计算直线距离并在地图上显示距离信息（显示在每个地点的旁边）
+						var distance = map.getDistance(userPoint, location.point).toFixed(0); // 单位：米
+						var label = new BMap.Label('距离：' + distance + '米', {
+							offset: new BMap.Size(20, -10),
+						});
+						marker.setLabel(label);
+					}
 				}
 
 				showUserMarker();
