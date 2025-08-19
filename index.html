@@ -157,7 +157,21 @@
 							imageSize: new BMap.Size(30, 30), // 图标所用的图片大小，必须与实际图片大小一致
 						}
 					);
-					map.addOverlay(new BMap.Marker(point, { icon: customIcon })); //添加标注
+					// 创建标记并添加名称标签
+					var marker = new BMap.Marker(point, { icon: customIcon });
+					// 创建地点名称标签并添加到标记上方
+					var nameLabel = new BMap.Label(shortName, {
+						offset: new BMap.Size(-30, -30) // 调整偏移量使标签显示在图标上方
+					});
+					nameLabel.setStyle({
+						color: "#FF4040",
+						fontSize: "16px",
+						backgroundColor: "transparent",
+						border: "none",
+						fontWeight: "bold"
+					});
+					marker.setLabel(nameLabel);
+					map.addOverlay(marker); //添加标注
 
 					locations.push({ name: shortName, point: point });
 					// 更新LocalStorage中的数据
@@ -199,6 +213,19 @@
 
 					var marker = new BMap.Marker(location.point, { icon: customIcon });
 					map.addOverlay(marker);
+
+					// 创建地点名称标签并添加到标记上方
+					var nameLabel = new BMap.Label(location.name, {
+						offset: new BMap.Size(-30, -30) // 调整偏移量使标签显示在图标上方
+					});
+					nameLabel.setStyle({
+						color: "#FF4040",
+						fontSize: "16px",
+						backgroundColor: "transparent",
+						border: "none",
+						fontWeight: "bold"
+					});
+					marker.setLabel(nameLabel);
 
 					// 在地点上添加信息窗口
 					var infoWindow = new BMap.InfoWindow(location.name);
